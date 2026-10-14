@@ -10,6 +10,14 @@ import (
 	"strings"
 )
 
+// Stats tracks the results of the file rename process.
+type Stats struct {
+	success    int
+	duplicates int
+	errors     int
+	fileCount  int
+}
+
 // removeEmojis removes all emoji characters from the input string by filtering out
 // runes that fall within known emoji Unicode ranges. Returns a string.
 func removeEmojis(input string) string {
@@ -119,7 +127,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fileCount := 0
+	stats := &Stats{}
 
 	for _, file := range files {
 		newFile := normalizeFileName(file)
@@ -131,6 +139,7 @@ func main() {
 
 		// Skip this file because it already exists.
 		if _, err := os.Stat(newFile); err == nil {
+			stats.duplicates++
 			continue
 		}
 
@@ -138,13 +147,24 @@ func main() {
 			err := os.Rename(file, newFile)
 			if err != nil {
 				fmt.Println(err)
+				stats.errors++
 				continue
 			}
+			stats.success++
 		}
 
-		fileCount++
+		stats.fileCount++
 		fmt.Println("New file name:", newFile)
 	}
 
-	fmt.Printf("\n %d files have been renamed.\n", fileCount)
+	fmt.Printf("\nRenaming complete.\n")
+	fmt.Println("-----------------------------")
+	fmt.Printf("Successfully renamed: %d\n", stats.success)
+	fmt.Printf("Duplicate files:      %d\n", stats.duplicates)
+	fmt.Printf("Errors:               %d\n", stats.errors)
+	if *dryRun {
+		fmt.Printf("Dry-run: %d files would have been renamed.\n", stats.fileCount)
+	} else {
+		fmt.Printf("Total files renamed: %d\n", stats.fileCount)
+	}
 }
