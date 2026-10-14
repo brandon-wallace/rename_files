@@ -70,6 +70,9 @@ func normalizeFileName(oldPath string) string {
 	// Remove comma characters
 	newName = strings.ReplaceAll(newName, ",", "")
 
+	// Remove quotation characters
+	newName = strings.ReplaceAll(newName, "＂", "")
+
 	// Remove octothorpe characters
 	newName = strings.ReplaceAll(newName, "#", "")
 
