@@ -18,11 +18,15 @@
 
 ## Installation
 
-### Build
+### Clone and build
 
 Save `rename_files.go` in your project directory, then build the executable:
 
 ```sh
+git clone https://github.com/brandon-wallace/rename_files.git
+
+cd rename_files
+
 go build -o rename_files rename_files.go
 ```
 
